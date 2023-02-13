@@ -46,6 +46,7 @@ async function fetchWikipediaData (title) {
       new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 10000))
     ]);
     if (!res.ok) {
+      //404(記事なし)だったらcatchへ
       throw new Error('404 Not Found');
     }
     return await res.json();
@@ -62,21 +63,28 @@ async function generateList(pageTitle) {
   const data = await fetchWikipediaData(pageTitle)
   const {title,thumbnail,extract} = data
   const birthDay = await getBirthDay(title);
+  
+  //画像を読み込んでから出力するための記述(リストを出力しながら画像を読み込むのはなんかダサいので) 
+  let imgsrc = thumbnail?thumbnail.source:"https://placehold.jp/30/888888/ffffff/300x150.png?text=no+image";
+  const img = new Image();
+  img.src = imgsrc;
+  await new Promise(resolve => {
+    img.onload = () => resolve();
+  })
+  
   serchingText.classList.remove("active");
-
-
   wikiList.innerHTML = `
     <dt>名前</dt>
     <dd>${title}</dd>
     <dt>プロフィール画像</dt>
-    <dd>
-      <img src="${thumbnail?thumbnail.source:'https://placehold.jp/30/888888/ffffff/300x150.png?text=no+image'}" alt="">
+    <dd id = "image">
     </dd>
     <dt>生年月日</dt>
     <dd id="birthDay">${birthDay}</dd>
     <dt>概要</dt>
     <dd>${extract}</dd>
   `
+  document.getElementById("image").appendChild(img)
 }
 
 //引数のページに書いてある生年月日を取得する関数
