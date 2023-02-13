@@ -8,7 +8,7 @@ displayButton.addEventListener('click',(e) => {
   e.preventDefault();
 
   generateList(nameInput.value)
-    .then (() =>{
+    .then (() =>{ //addEventListenerにasync-await関数を設定するのは非推奨なのでthenメソッドを使った
       popup();
       nameInput.value="";
       nameInput.focus();
@@ -42,6 +42,7 @@ async function fetchWikipediaData (title) {
   try {
     const res = await Promise.race([
       fetch(url),
+      //タイムアウト処理(10秒)
       new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 10000))
     ]);
     if (!res.ok) {
@@ -86,7 +87,7 @@ async function getBirthDay (title) {
     const data = await res.json();
     const key = Object.keys(data.query.pages)[0];
     const text = data.query.pages[key].revisions[0]['*'];
-    let birthDayLine = text.match(/(生年月日と年齢.*)|(death_date.*)|(死亡年月日と没年齢.*)|(生年 =.*)/);
+    const birthDayLine = text.match(/(生年月日と年齢.*)|(death_date.*)|(死亡年月日と没年齢.*)|(生年 =.*)/);
     if(birthDayLine[0].includes("生年 =")) {
       const year = text.match(/生年 =.*/)[0].match(/\d{1,4}/);
       const month = text.match(/生月 =.*/)[0].match(/\d{1,2}/);
