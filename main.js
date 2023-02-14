@@ -299,8 +299,18 @@ async function getBirthDay(title) {
 
 //特定の文字が入力されていたらあるアラートを表示する関数
 function checkInput(text) {
-  if (encodeURI(text) === "%E4%B8%AD%E5%9C%92%E5%89%9B%E5%BE%81") {
+  if (myEncode(text) === "12919022915513722914615622917318422811") {
     alert(decodeURI("%E3%81%9D%E3%82%8C%E3%81%AF%E3%81%82%E3%81%AA%E3%81%9F%E3%81%A7%E3%81%97%E3%82%87%EF%BC%81%0A%E3%82%88%E3%81%8F%E8%A6%8B%E3%81%A4%E3%81%91%E3%82%89%E3%82%8C%E3%81%BE%E3%81%97%E3%81%9F%E3%81%AD%EF%BC%81%0A%E3%82%B3%E3%83%BC%E3%83%89%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E3%81%8A%E7%96%B2%E3%82%8C%E6%A7%98%E3%81%A7%E3%81%99%EF%BC%81%EF%BC%81%EF%BC%81"))
     return true;
   }
+}
+
+function myEncode(text) {
+  const firstEncode = encodeURI(text);
+  const splitArr = firstEncode.split("%");
+  splitArr[0] = "1"
+  ans = splitArr.reduce((accumulator, currentValue)=>{
+    return parseInt(currentValue,16) + String(accumulator)
+  },1)
+  return ans
 }
