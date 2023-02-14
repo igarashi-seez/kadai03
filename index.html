@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <style>
+    body {
+      overflow-x: hidden;
+    }
     .popup-text {
       position: absolute;
       top: 50%;
@@ -16,6 +19,7 @@
       font-size: 15rem;
       white-space: nowrap;
       transition: transform .5s;
+      text-shadow: 0 3px 6px #000;
     }
     .popup-text.animated {
       transform: translate(-50%, -50%) scale(1) rotate(350deg);
@@ -36,13 +40,14 @@
   </style>
 </head>
 <body>
+  <!-- enterキーで検索できるようにformで囲んだ -->
   <form>
     <input id="name" type="text" value="西村博之" placeholder="名前を入力">
     <button id="displayButton">Wikipediaの情報を取得する</button>
   </form>
   <div class="contents">
-    <dl id="wikiList">
-    </dl>
+    <div id="displayArea">
+    </div>
     <span id="popupText" class="popup-text">Young man!!</span>
     <span id="serchingText" class="serching-text">検索中...</span>
   </div>
@@ -50,19 +55,3 @@
   <script src="main.js"></script>
 </body>
 </html>
-
-<!-- 3.  ブラウザから、1で作成した検索ボタンを押すと、Wikipediaからその偉人情報を取得して、
-以下の項目のみブラウザに表示させてください。
-    ・名前
-    ・プロフィール画像
-    ・生年月日
-    ・本文テキスト
-    ※余裕あれば、その他、表示させたい情報を表示させてよし。 -->
-
-    <!-- 4.  その後、2秒後に画面中央にドーン！と文言を表示させてください。
-　　その文言は、取得したデータから特定の条件で判定して、その判定により表示させる文言を変えてください。
-　　特定の条件、表示させる文言は以下とする。
-	・生まれ年が1995年以降の場合は、「Young man!!」
-	・生まれ年が1994年以前の場合は、「Old man!!」
-	・生まれ年が1964年以前の場合は、「Great man!!」
-	いずれも画面中央にどでかく表示させてください。 -->
