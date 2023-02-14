@@ -33,7 +33,7 @@ function popup() {
   popupText.classList.add('animated');
   setTimeout(() => {
     popupText.classList.remove('animated');
-  }, 2500);
+  }, 3000);
 }
 
 //Wikipediaからデータをfetchしてくる関数
@@ -62,14 +62,21 @@ async function generateList(pageTitle) {
   serchingText.classList.add("active");
   const data = await fetchWikipediaData(pageTitle)
   const {title,thumbnail,extract} = data
-  const birthDay = await getBirthDay(title);
+  let birthDay;
   
   //画像を読み込んでから出力するための記述(リストを出力しながら画像を読み込むのはなんかダサいので) 
   let imgsrc = thumbnail?thumbnail.source:"https://placehold.jp/30/888888/ffffff/300x150.png?text=no+image";
   const img = new Image();
   img.src = imgsrc;
-  await new Promise(resolve => {
-    img.onload = () => resolve();
+
+  //Promise.allで画像読み込みと生年月日取得を同時に行うことで時間短縮
+  await Promise.all([
+    getBirthDay(title),
+    new Promise(resolve => {
+      img.onload = () => resolve();
+    })
+  ]).then(res => {
+    birthDay = res[0];
   })
   
   serchingText.classList.remove("active");
