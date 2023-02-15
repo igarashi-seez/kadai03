@@ -26,7 +26,7 @@ async function displayWikipediaData (title) {
   try {
     await generateList(title);
     await sleep(POPUP_DELAY);
-    popup(POPUP_DISPLAY_TIME);
+    await popup(POPUP_DISPLAY_TIME);
   } catch (error) {
     switch (error.message) {
       case "404":
@@ -65,9 +65,12 @@ function popup(time) {
     popupText.innerHTML = "Young man!!"
   }
   popupText.classList.add('animated');
-  setTimeout(() => {
-    popupText.classList.remove('animated');
-  }, time);
+  return new Promise (resolve => {
+    setTimeout(async () => {
+      popupText.classList.remove('animated');
+      resolve();
+    }, time);
+  })
 }
 
 //待機する関数
