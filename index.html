@@ -24,7 +24,7 @@
     .popup-text.animated {
       transform: translate(-50%, -50%) scale(1) rotate(350deg);
     }
-    .serching-text {
+    .loading-text {
       display: none;
       position: absolute;
       top: 50%;
@@ -34,7 +34,12 @@
       font-size: 5rem;
       white-space: nowrap;
     }
-    .serching-text.active {
+    .loading-text .loaded {
+      display: inline-block;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    .loading-text.active {
       display: block;
     }
   </style>
@@ -49,7 +54,7 @@
     <div id="displayArea">
     </div>
     <span id="popupText" class="popup-text">Young man!!</span>
-    <span id="serchingText" class="serching-text">検索中...</span>
+    <span id="loadingText" class="loading-text"></span>
   </div>
   
   <script src="main.js"></script>

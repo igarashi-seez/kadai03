@@ -9,7 +9,7 @@ const POPUP_DISPLAY_TIME = 3000; //ポップアップの表示時間を設定(ms
 
 const nameInput = document.getElementById('name');
 const displayButton = document.getElementById('displayButton');
-const serchingText = document.getElementById('serchingText')
+const loadingText = document.getElementById('loadingText')
 const popupText = document.getElementById('popupText');
 const displayArea = document.getElementById('displayArea');
 
@@ -49,8 +49,8 @@ async function displayWikipediaData (title) {
 
 //ポップアップアニメーション
 function popup(time) {
-  const str = document.getElementById('birthDay').innerHTML;
-  const birthYear = parseInt(str.substring(0, str.indexOf('年')));
+  const birthDay = document.getElementById('birthDay').innerHTML;
+  const birthYear = parseInt(birthDay.substring(0, birthDay.indexOf('年')));
 
   if (!birthYear) {
     popupText.innerHTML = "Unknown!!"
@@ -96,7 +96,8 @@ async function fetchWikipediaData(title) {
 async function generateList(pageTitle) {
   try {
     displayArea.innerHTML = "";
-    serchingText.classList.add("active");
+    loadingText.innerText = "検索中..."
+    loadingText.classList.add("active");
     const data = await fetchWikipediaData(pageTitle)
     const { title, thumbnail, extract } = data
     let birthDay;
@@ -105,18 +106,27 @@ async function generateList(pageTitle) {
     let imgsrc = thumbnail ? thumbnail.source : "https://placehold.jp/30/888888/ffffff/300x150.png?text=no+image";
     const img = new Image();
     img.src = imgsrc;
-
+    
+    loadingText.innerHTML="画像と生年月日を取得中...<br>";
     //Promise.allで画像読み込みと生年月日取得を同時に行うことで時間短縮
     await Promise.all([
-      getBirthDay(title),
+      getBirthDay(title)
+        .then((data)=>{
+          loadingText.innerHTML+=`<span class=loaded>✅　生年月日取得　</span>`
+          return data;
+        }),
       new Promise(resolve => {
-        img.onload = () => resolve();
+        img.onload = () => {
+          loadingText.innerHTML+=`<span class=loaded>✅　画像読み込み　</span>`;
+          resolve();
+        };
       })
     ]).then(res => {
       birthDay = res[0];
     })
-    
-    serchingText.classList.remove("active");
+    await sleep(500);
+
+    loadingText.classList.remove("active");
     displayArea.innerHTML = `
 	    <dl>
 	      <dt>名前</dt>
@@ -132,7 +142,7 @@ async function generateList(pageTitle) {
 	  `
     document.getElementById("image").appendChild(img)
   } catch (error) {
-    serchingText.classList.remove("active");
+    loadingText.classList.remove("active");
     return Promise.reject(error);
   }
 }
@@ -300,7 +310,7 @@ async function getBirthDay(title) {
 //特定の文字が入力されていたらあるアラートを表示する関数
 function checkInput(text) {
   if (myEncode(text) === "12919022915513722914615622917318422811") {
-    alert(decodeURI("%E3%81%9D%E3%82%8C%E3%81%AF%E3%81%82%E3%81%AA%E3%81%9F%E3%81%A7%E3%81%97%E3%82%87%EF%BC%81%0A%E3%82%88%E3%81%8F%E8%A6%8B%E3%81%A4%E3%81%91%E3%82%89%E3%82%8C%E3%81%BE%E3%81%97%E3%81%9F%E3%81%AD%EF%BC%81%0A%E3%82%B3%E3%83%BC%E3%83%89%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E3%81%8A%E7%96%B2%E3%82%8C%E6%A7%98%E3%81%A7%E3%81%99%EF%BC%81%EF%BC%81%EF%BC%81"))
+    alert(decodeURI("%E3%81%9D%E3%82%8C%E3%81%AF%E3%81%82%E3%81%AA%E3%81%9F%E3%81%A7%E3%81%97%E3%82%87%EF%BC%81%0A%E8%A6%8B%E3%81%A4%E3%81%91%E3%81%A6%E3%81%8F%E3%82%8C%E3%81%A6%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%99%EF%BC%81%0A%E3%82%B3%E3%83%BC%E3%83%89%E3%83%AC%E3%83%93%E3%83%A5%E3%83%BC%E3%81%8A%E7%96%B2%E3%82%8C%E6%A7%98%E3%81%A7%E3%81%99%EF%BC%81%EF%BC%81%EF%BC%81"))
     return true;
   }
 }
