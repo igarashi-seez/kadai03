@@ -22,6 +22,7 @@ displayButton.addEventListener('click', (e) => {
 
 //Wikipediaのリストもしくはエラー画面を表示する関数
 async function displayWikipediaData (title) {
+  displayButton.setAttribute('disabled','disabled');
   try {
     await generateList(title);
     await sleep(POPUP_DELAY);
@@ -29,21 +30,23 @@ async function displayWikipediaData (title) {
   } catch (error) {
     switch (error.message) {
       case "404":
-        Show404Image ();
+        await Show404Image ();
         break;
       case "timeout":
-        ShowTimeout ();
+        await ShowTimeout ();
         break;
       case "Failed to fetch":
-        ShowFailedToFetch ();
+        await ShowFailedToFetch ();
         break;
       default:
         displayArea.innerHTML = `${error.message}`
         break;
     }
+    loadingText.classList.remove("active");
   } finally {
     nameInput.value = "";
     nameInput.focus();
+    displayButton.removeAttribute('disabled');
   }
 }
 
@@ -142,7 +145,6 @@ async function generateList(pageTitle) {
 	  `
     document.getElementById("image").appendChild(img)
   } catch (error) {
-    loadingText.classList.remove("active");
     return Promise.reject(error);
   }
 }
@@ -165,16 +167,17 @@ async function Show404Image () {
   document.getElementById("errorImage").appendChild(img)
 }
 
-//タイムアウトの時の処理
-function ShowTimeout () {
+//タイムアウトの時の処理　（async必要ないが今後非同期処理が書かれることを想定）
+async function ShowTimeout () {
   displayArea.innerHTML = `
     タイムアウトしました。
   `
 }
 
-function ShowFailedToFetch() {
+//ネットワークエラーなどでfetchできなかった時の処理　（async必要ないが今後非同期処理が書かれることを想定）
+async function ShowFailedToFetch() {
   displayArea.innerHTML = `
-    情報を取得できませんでした。ネットがつながっているか確認してください。
+    情報を取得できませんでした。ネットにつながっているか確認してください。
   `
 }
 

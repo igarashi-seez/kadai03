@@ -47,13 +47,19 @@
 <body>
   <!-- enterキーで検索できるようにformで囲んだ -->
   <form>
-    <input id="name" type="text" value="西村博之" placeholder="名前を入力">
+    <input id="name" type="text" value="西村博之" placeholder="名前を入力" list="example">
+    <datalist id="example">
+      <option value="西村博之"></option>
+      <option value="伊達みきお"></option>
+      <option value="塙宣之"></option>
+      <option value="五十嵐大士"></option>
+    </datalist>
     <button id="displayButton">Wikipediaの情報を取得する</button>
   </form>
   <div class="contents">
     <div id="displayArea">
     </div>
-    <span id="popupText" class="popup-text">Young man!!</span>
+    <span id="popupText" class="popup-text"></span>
     <span id="loadingText" class="loading-text"></span>
   </div>
   
