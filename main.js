@@ -28,20 +28,7 @@ async function displayWikipediaData (title) {
     await sleep(POPUP_DELAY);
     await popup(POPUP_DISPLAY_TIME);
   } catch (error) {
-    switch (error.message) {
-      case "404":
-        await Show404Image ();
-        break;
-      case "timeout":
-        await ShowTimeout ();
-        break;
-      case "Failed to fetch":
-        await ShowFailedToFetch ();
-        break;
-      default:
-        displayArea.innerHTML = `${error.message}`
-        break;
-    }
+    showError(error);
     loadingText.classList.remove("active");
   } finally {
     nameInput.value = "";
@@ -66,7 +53,7 @@ function popup(time) {
   }
   popupText.classList.add('animated');
   return new Promise (resolve => {
-    setTimeout(async () => {
+    setTimeout(() => {
       popupText.classList.remove('animated');
       resolve();
     }, time);
@@ -118,14 +105,11 @@ async function generateList(pageTitle) {
     await Promise.all([
       getBirthDay(title)
         .then((data)=>{
-          loadingText.innerHTML+=`<span class=loaded>✅　生年月日取得　</span>`
+          loadingText.innerHTML+=`<span class=loaded><span class="check">&check;</span>生年月日取得　</span>`
           return data;
         }),
-      new Promise(resolve => {
-        img.onload = () => {
-          loadingText.innerHTML+=`<span class=loaded>✅　画像読み込み　</span>`;
-          resolve();
-        };
+      loadImage(img, () => {
+        loadingText.innerHTML+=`<span class=loaded><span class="check">&check;</span>画像読み込み　</span>`
       })
     ]).then(res => {
       birthDay = res[0];
@@ -152,16 +136,42 @@ async function generateList(pageTitle) {
   }
 }
 
+//callbackの実行、画像を取得完了後promiseを返す関数
+function loadImage(img,callback) {
+  return new Promise(resolve => {
+    img.onload = () => {
+      if(callback !== undefined) callback();
+      resolve();
+    }
+  })
+}
 
-//エラー画像とメッセージを表示する関数
-async function Show404Image () {
+
+//エラーをその種別によって表示する関数
+async function showError (error) {
+  switch (error.message) {
+    case "404":
+      await show404Image ();
+      break;
+    case "timeout":
+      await showTimeout ();
+      break;
+    case "Failed to fetch":
+      await showFailedToFetch ();
+      break;
+    default:
+      displayArea.innerHTML = `${error.message}`
+      break;
+  }
+}
+
+//404の時の処理
+async function show404Image () {
   const rand = Math.floor(Math.random() * 10) + 1; // 1~10の乱数
   const img = new Image();
   img.src = `images/error${rand}.png`;
   img.width = 500;
-  await new Promise(resolve => {
-    img.onload = () => resolve();
-  })
+  await loadImage(img)
 
   displayArea.innerHTML = `
     <figure id="errorImage"></figure>
@@ -171,14 +181,14 @@ async function Show404Image () {
 }
 
 //タイムアウトの時の処理　（async必要ないが今後非同期処理が書かれることを想定）
-async function ShowTimeout () {
+async function showTimeout () {
   displayArea.innerHTML = `
     タイムアウトしました。
   `
 }
 
 //ネットワークエラーなどでfetchできなかった時の処理　（async必要ないが今後非同期処理が書かれることを想定）
-async function ShowFailedToFetch() {
+async function showFailedToFetch() {
   displayArea.innerHTML = `
     情報を取得できませんでした。ネットにつながっているか確認してください。
   `
